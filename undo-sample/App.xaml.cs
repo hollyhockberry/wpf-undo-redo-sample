@@ -13,5 +13,11 @@ namespace undo_sample
     /// </summary>
     public partial class App : Application
     {
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            var vm = new ViewModel();
+            Caretaker.Instance.Register(vm);
+            new MainWindow { DataContext = vm }.Show();
+        }
     }
 }
