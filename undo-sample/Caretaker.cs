@@ -21,6 +21,14 @@ namespace undo_sample
             set => SetProperty(ref _CanUndo, value);
         }
 
+        private bool _CanRedo;
+
+        public bool CanRedo
+        {
+            get => _CanRedo;
+            set => SetProperty(ref _CanRedo, value);
+        }
+
         protected void SetProperty<T>(ref T target, T value, [CallerMemberName] string? propertyName = null)
         {
             if (!Equals(target, value))
@@ -32,7 +40,9 @@ namespace undo_sample
 
         private bool Active { get; set; } = true;
 
-        private Stack<Memento> Mementos { get; } = new Stack<Memento>();
+        private Stack<Memento> UndoMementos { get; } = new Stack<Memento>();
+
+        private Stack<Memento> RedoMementos { get; } = new Stack<Memento>();
 
         private Dictionary<object, Dictionary<string, object>> Values { get; } = new Dictionary<object, Dictionary<string, object>>();
 
@@ -50,10 +60,12 @@ namespace undo_sample
 
                     var target = (object)s!;
                     var name = (string)e.PropertyName!;
-                    Mementos.Push(new Memento(target, name, Values[target][name]!));
+                    UndoMementos.Push(new Memento(target, name, Values[target][name]!));
                     Values[target][name] = target.GetType().GetProperty(name)?.GetValue(nc)!;
+                    RedoMementos.Clear();
 
-                    CanUndo = Mementos.Count > 0;
+                    CanUndo = UndoMementos.Count > 0;
+                    CanRedo = RedoMementos.Count > 0;
                 };
             }
         }
@@ -65,7 +77,8 @@ namespace undo_sample
             try
             {
                 Active = false;
-                var memento = Mementos.Pop();
+                var memento = UndoMementos.Pop();
+                RedoMementos.Push(new Memento(memento.Target, memento.PropertyName, Values[memento.Target][memento.PropertyName]));
                 Values[memento.Target][memento.PropertyName] = memento.Data;
 
                 var property = memento.Target.GetType().GetProperty(memento.PropertyName);
@@ -73,7 +86,30 @@ namespace undo_sample
             }
             finally
             {
-                CanUndo = Mementos.Count > 0;
+                CanUndo = UndoMementos.Count > 0;
+                CanRedo = RedoMementos.Count > 0;
+                Active = true;
+            }
+        }
+
+        public void Redo()
+        {
+            if (!CanRedo) return;
+
+            try
+            {
+                Active = false;
+                var memento = RedoMementos.Pop();
+                UndoMementos.Push(new Memento(memento.Target, memento.PropertyName, Values[memento.Target][memento.PropertyName]));
+                Values[memento.Target][memento.PropertyName] = memento.Data;
+
+                var property = memento.Target.GetType().GetProperty(memento.PropertyName);
+                property?.SetValue(memento.Target, memento.Data);
+            }
+            finally
+            {
+                CanUndo = UndoMementos.Count > 0;
+                CanRedo = RedoMementos.Count > 0;
                 Active = true;
             }
         }

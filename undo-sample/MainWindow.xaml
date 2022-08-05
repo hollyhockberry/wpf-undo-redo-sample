@@ -11,13 +11,27 @@
         <Style TargetType="TextBlock">
             <Setter Property="Margin" Value="0 5"/>
         </Style>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="5 0"/>
+        </Style>
     </Window.Resources>
     <StackPanel Margin="10 5 10 10">
-        <Button Content="Undo">
-            <Button.Command>
-                <local:UndoCommand/>
-            </Button.Command>
-        </Button>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Content="Undo">
+                <Button.Command>
+                    <local:UndoCommand/>
+                </Button.Command>
+            </Button>
+            <Button Content="Redo" Grid.Column="1">
+                <Button.Command>
+                    <local:RedoCommand/>
+                </Button.Command>
+            </Button>
+        </Grid>
         <TextBlock>Text</TextBlock>
         <TextBox Text="{Binding Text}"/>
         <TextBlock>Integer</TextBlock>
