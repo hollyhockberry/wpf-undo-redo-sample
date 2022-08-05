@@ -5,8 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:undo_sample"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance Type={x:Type local:ViewModel}}"
         Title="MainWindow" Width="300" SizeToContent="Height">
+    <Window.DataContext>
+        <local:ViewModel/>
+    </Window.DataContext>
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="Margin" Value="0 5"/>
@@ -18,18 +20,14 @@
     <StackPanel Margin="10 5 10 10">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="*"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Button Content="Undo">
-                <Button.Command>
-                    <local:UndoCommand/>
-                </Button.Command>
+            <Button Command="{Binding UndoCommand}">
+                Undo
             </Button>
-            <Button Content="Redo" Grid.Column="1">
-                <Button.Command>
-                    <local:RedoCommand/>
-                </Button.Command>
+            <Button Grid.Column="1" Command="{Binding RedoCommand}">
+                Redo
             </Button>
         </Grid>
         <TextBlock>Text</TextBlock>

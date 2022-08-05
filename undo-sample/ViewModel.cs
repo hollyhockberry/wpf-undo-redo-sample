@@ -1,5 +1,6 @@
 ﻿﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 namespace undo_sample
 {
@@ -35,9 +36,40 @@ namespace undo_sample
         {
             if (!Equals(target, value))
             {
+                Caretaker.Instance.Add(new Memento(this, propertyName!, target!));
                 target = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+
+        public ViewModel()
+        {
+            Caretaker.Instance.PropertyChanged += (s, e) =>
+            {
+                switch (e.PropertyName ?? "")
+                {
+                    case "CanUndo":
+                        (UndoCommand as Command)?.RaiseCanExecute();
+                        break;
+                    case "CanRedo":
+                        (RedoCommand as Command)?.RaiseCanExecute();
+                        break;
+                    default:
+                        break;
+                }
+            };
+        }
+
+        private Command? _UndoCommand;
+
+        public ICommand UndoCommand => _UndoCommand ??= new Command(
+            (_) => Caretaker.Instance.Undo(),
+            (_) => Caretaker.Instance.CanUndo);
+
+        private Command? _RedoCommand;
+
+        public ICommand RedoCommand => _RedoCommand ??= new Command(
+            (_) => Caretaker.Instance.Redo(),
+            (_) => Caretaker.Instance.CanRedo);
     }
 }
