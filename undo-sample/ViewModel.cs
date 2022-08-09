@@ -8,28 +8,24 @@ namespace undo_sample
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private string _Text = "SampleText1";
+        private readonly Model Model = new();
 
         public string Text
         {
-            get => _Text;
-            set => SetProperty(ref _Text, value);
+            get => Model.Text;
+            set => SetProperty(ref Model.Text, value);
         }
-
-        private int _Integer = 100;
 
         public int Integer
         {
-            get => _Integer;
-            set => SetProperty(ref _Integer, value);
+            get => Model.Integer;
+            set => SetProperty(ref Model.Integer, value);
         }
-
-        private bool _Boolean;
 
         public bool Boolean
         {
-            get => _Boolean;
-            set => SetProperty(ref _Boolean, value);
+            get => Model.Boolean;
+            set => SetProperty(ref Model.Boolean, value);
         }
 
         protected void SetProperty<T>(ref T target, T value, [CallerMemberName] string? propertyName = null)
