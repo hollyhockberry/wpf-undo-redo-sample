@@ -6,9 +6,9 @@
 
         readonly string PropertyName;
 
-        readonly object Data;
+        readonly object? Data;
 
-        public Memento(object target, string propertyName, object data)
+        public Memento(object target, string propertyName, object? data)
         {
             Target = target;
             PropertyName = propertyName;
@@ -18,7 +18,7 @@
         public IMemento Apply()
         {
             var property = Target.GetType().GetProperty(PropertyName);
-            var memento = new Memento(Target, PropertyName, property?.GetValue(Target)!);
+            var memento = new Memento(Target, PropertyName, property?.GetValue(Target));
             property?.SetValue(Target, Data);
             return memento;
         }
