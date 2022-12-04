@@ -39,11 +39,11 @@ namespace undo_sample
 
         private bool Active { get; set; } = true;
 
-        private Stack<Memento> UndoMementos { get; } = new Stack<Memento>();
+        private Stack<IMemento> UndoMementos { get; } = new Stack<IMemento>();
 
-        private Stack<Memento> RedoMementos { get; } = new Stack<Memento>();
+        private Stack<IMemento> RedoMementos { get; } = new Stack<IMemento>();
 
-        public void Add(Memento memento)
+        public void Add(IMemento memento)
         {
             if (Active)
             {

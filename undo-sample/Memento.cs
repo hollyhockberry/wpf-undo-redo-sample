@@ -1,6 +1,6 @@
 ﻿namespace undo_sample
 {
-    internal class Memento
+    internal class Memento : IMemento
     {
         readonly object Target;
 
@@ -15,7 +15,7 @@
             Data = data;
         }
 
-        public Memento Apply()
+        public IMemento Apply()
         {
             var property = Target.GetType().GetProperty(PropertyName);
             var memento = new Memento(Target, PropertyName, property?.GetValue(Target)!);
