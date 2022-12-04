@@ -36,5 +36,6 @@
         <TextBox Text="{Binding Integer}"/>
         <TextBlock>Boolean</TextBlock>
         <CheckBox IsChecked="{Binding Boolean}"/>
+        <DataGrid ItemsSource="{Binding IntegerList}" Margin="0 10"/>
     </StackPanel>
 </Window>
