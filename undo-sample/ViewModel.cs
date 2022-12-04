@@ -46,6 +46,9 @@ namespace undo_sample
 
         public ViewModel()
         {
+            IntegerList.CollectionChanged += (s, e) =>
+                Caretaker.Instance.Add(new ObservableCollectionMemento<ValueViewModel<int>>(IntegerList, e));
+
             Caretaker.Instance.PropertyChanged += (s, e) =>
             {
                 switch (e.PropertyName ?? "")
