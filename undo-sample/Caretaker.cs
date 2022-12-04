@@ -61,10 +61,7 @@ namespace undo_sample
             try
             {
                 Active = false;
-                var memento = UndoMementos.Pop();
-                var property = memento.Target.GetType().GetProperty(memento.PropertyName);
-                RedoMementos.Push(new Memento(memento.Target, memento.PropertyName, property?.GetValue(memento.Target)!));
-                property?.SetValue(memento.Target, memento.Data);
+                RedoMementos.Push(UndoMementos.Pop().Apply());
             }
             finally
             {
@@ -81,10 +78,7 @@ namespace undo_sample
             try
             {
                 Active = false;
-                var memento = RedoMementos.Pop();
-                var property = memento.Target.GetType().GetProperty(memento.PropertyName);
-                UndoMementos.Push(new Memento(memento.Target, memento.PropertyName, property?.GetValue(memento.Target)!));
-                property?.SetValue(memento.Target, memento.Data);
+                UndoMementos.Push(RedoMementos.Pop().Apply());
             }
             finally
             {
