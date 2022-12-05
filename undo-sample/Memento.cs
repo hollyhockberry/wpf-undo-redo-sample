@@ -1,18 +1,26 @@
 ﻿namespace undo_sample
 {
-    internal class Memento
+    internal class Memento : IMemento
     {
-        public object Target { get; }
+        readonly object Target;
 
-        public string PropertyName { get; }
+        readonly string PropertyName;
 
-        public object Data { get; }
+        readonly object? Data;
 
-        public Memento(object target, string propertyName, object data)
+        public Memento(object target, string propertyName, object? data)
         {
             Target = target;
             PropertyName = propertyName;
             Data = data;
+        }
+
+        public IMemento Apply()
+        {
+            var property = Target.GetType().GetProperty(PropertyName);
+            var memento = new Memento(Target, PropertyName, property?.GetValue(Target));
+            property?.SetValue(Target, Data);
+            return memento;
         }
     }
 }

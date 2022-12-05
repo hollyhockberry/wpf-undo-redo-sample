@@ -1,4 +1,6 @@
-﻿﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
@@ -28,6 +30,10 @@ namespace undo_sample
             set => SetProperty(ref Model.Boolean, value);
         }
 
+        ObservableCollection<ValueViewModel<int>>? _IntegerList;
+
+        public ObservableCollection<ValueViewModel<int>> IntegerList => _IntegerList ??= new(Enumerable.Range(0, 5).Select(i => new ValueViewModel<int>(i)));
+
         protected void SetProperty<T>(ref T target, T value, [CallerMemberName] string? propertyName = null)
         {
             if (!Equals(target, value))
@@ -40,6 +46,9 @@ namespace undo_sample
 
         public ViewModel()
         {
+            IntegerList.CollectionChanged += (s, e) =>
+                Caretaker.Instance.Add(new ObservableCollectionMemento<ValueViewModel<int>>(IntegerList, e));
+
             Caretaker.Instance.PropertyChanged += (s, e) =>
             {
                 switch (e.PropertyName ?? "")

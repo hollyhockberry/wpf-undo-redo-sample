@@ -39,11 +39,11 @@ namespace undo_sample
 
         private bool Active { get; set; } = true;
 
-        private Stack<Memento> UndoMementos { get; } = new Stack<Memento>();
+        private Stack<IMemento> UndoMementos { get; } = new Stack<IMemento>();
 
-        private Stack<Memento> RedoMementos { get; } = new Stack<Memento>();
+        private Stack<IMemento> RedoMementos { get; } = new Stack<IMemento>();
 
-        public void Add(Memento memento)
+        public void Add(IMemento memento)
         {
             if (Active)
             {
@@ -61,10 +61,7 @@ namespace undo_sample
             try
             {
                 Active = false;
-                var memento = UndoMementos.Pop();
-                var property = memento.Target.GetType().GetProperty(memento.PropertyName);
-                RedoMementos.Push(new Memento(memento.Target, memento.PropertyName, property?.GetValue(memento.Target)!));
-                property?.SetValue(memento.Target, memento.Data);
+                RedoMementos.Push(UndoMementos.Pop().Apply());
             }
             finally
             {
@@ -81,10 +78,7 @@ namespace undo_sample
             try
             {
                 Active = false;
-                var memento = RedoMementos.Pop();
-                var property = memento.Target.GetType().GetProperty(memento.PropertyName);
-                UndoMementos.Push(new Memento(memento.Target, memento.PropertyName, property?.GetValue(memento.Target)!));
-                property?.SetValue(memento.Target, memento.Data);
+                UndoMementos.Push(RedoMementos.Pop().Apply());
             }
             finally
             {
